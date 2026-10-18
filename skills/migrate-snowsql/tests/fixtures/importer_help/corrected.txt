@@ -1,0 +1,7 @@
+--snowsql-config-file FILE SnowSQL configuration file to merge
+does not replace the default file
+list.
+You can use the --snowsql-config-file option to merge additional SnowSQL
+configuration files after the default locations. This does not replace the
+default file list.
+Keys from the unnamed [connections] section are not copied onto it.

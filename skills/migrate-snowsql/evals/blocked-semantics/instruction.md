@@ -1,0 +1,1 @@
+Use the migrate-snowsql skill. Classify the continue-on-error script and the large CSV export, then write snowsql-migration-report.md. Do not import connections, do not change the original scripts, and do not run SQL.

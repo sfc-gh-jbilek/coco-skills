@@ -1,0 +1,2 @@
+You can use the --snowsql-config-file option to override this default behavior and import from one or more specific SnowSQL configuration files instead.
+If more than one of these configurations define the same connection, this command overwrites the previously imported connection definition with the most recent one.
