@@ -1,1 +1,0 @@
-cat daily.sql | snowsql

@@ -5,12 +5,5 @@ description = "Read-only scanner for a guided SnowSQL to Snowflake CLI migration
 requires-python = ">=3.11"
 dependencies = []
 
-[dependency-groups]
-dev = ["pytest>=8.3"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["scripts"]
-
 [tool.uv]
 package = false

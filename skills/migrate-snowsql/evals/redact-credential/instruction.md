@@ -1,1 +1,0 @@
-Use the migrate-snowsql skill. Inventory this project and write the report. Do not import connections, do not change the original files, and do not run SQL. This directory is the work repo. Write the working files under snowsql-migration/.

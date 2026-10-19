@@ -1,7 +1,0 @@
-[connections]
-accountname=example-account
-password=SuperSecretPlantedValue123
-
-[connections.example]
-username=user1
-token=AnotherPlantedTokenValue456
