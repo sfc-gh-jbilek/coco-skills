@@ -17,6 +17,7 @@ test ! -e snowsql-inventory.json || fail "migration inventory was created"
 test ! -e snowsql-migration-report.md || fail "migration report was created"
 test ! -e migration-plan.md || fail "migration plan was created"
 test ! -d snowsql-migrated || fail "migration copies were created"
+test ! -d snowsql-migration || fail "migration working directory was created"
 
 echo "PASS"
 echo 1 > /logs/verifier/reward.txt

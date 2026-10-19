@@ -13,9 +13,11 @@ sha256sum -c <<'EOF' || fail "originals changed"
 cef6f248287711674160c5bcac4a096822544b516bbade70f0308438760257e3  run.sh
 EOF
 
-test -f snowsql-inventory.json || fail "missing inventory"
-test -f snowsql-migration-report.md || fail "missing report"
-grep -q '<redacted>' snowsql-inventory.json || fail "missing redaction placeholder"
+test ! -e snowsql-inventory.json || fail "inventory written beside the scripts"
+test ! -e snowsql-migration-report.md || fail "report written beside the scripts"
+test -f snowsql-migration/snowsql-inventory.json || fail "missing inventory"
+test -f snowsql-migration/snowsql-migration-report.md || fail "missing report"
+grep -q '<redacted>' snowsql-migration/snowsql-inventory.json || fail "missing redaction placeholder"
 
 python3 - <<'PY' || fail "secret leaked"
 from pathlib import Path

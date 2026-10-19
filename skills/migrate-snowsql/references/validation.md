@@ -4,13 +4,13 @@ Static checks do not open a connection. A scanner result on a fixture does not c
 
 ## Static checks
 
-Run from the project root:
+Run the scanner on the SnowSQL project. Redirect stdout into the migration directory in the work repo (`$MIGRATION_DIR` from `SKILL.md`):
 
 ```bash
-uv run --project "$SKILL_DIRECTORY" python "$SKILL_DIRECTORY/scripts/scan_snowsql.py" . > snowsql-inventory.json
+uv run --project "$SKILL_DIRECTORY" python "$SKILL_DIRECTORY/scripts/scan_snowsql.py" "$SNOWSQL_PROJECT" > "$MIGRATION_DIR/snowsql-inventory.json"
 ```
 
-The command is read-only. It writes nothing except the file you redirect. Review `snowsql-inventory.json` before you trust a summary a person typed.
+The command is read-only. It writes nothing except the file you redirect. Review `$MIGRATION_DIR/snowsql-inventory.json` before you trust a summary a person typed.
 
 The inventory lists SnowSQL invocations, flags, `-o` options, `SNOWSQL_*` names, client directives, file includes, output contracts, and large-result exports. Secret values are `<redacted>`. If a planted or real secret string appears in the JSON, stop and fix the redaction before showing the file.
 
@@ -23,7 +23,7 @@ snow helpers import-snowsql-connections --help | uv run --project "$SKILL_DIRECT
 
 Both must exit 0 before an import. `snow helpers check-snowsql-env-vars` must be the read-only check from `references/configuration.md`.
 
-After approved copies exist, run `diff -u` between each original and `snowsql-migrated/` copy. Originals must stay byte-for-byte identical. Files with a blocked finding must not have a translated copy.
+After approved copies exist, run `diff -u` between each original and the copy under `$MIGRATION_DIR/snowsql-migrated/`. Originals must stay byte-for-byte identical. Files with a blocked finding must not have a translated copy.
 
 ## Optional live SQL
 
@@ -48,7 +48,7 @@ If any of `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PRIVATE_KEY`, `SNOWF
 
 ## Report
 
-Write `snowsql-migration-report.md` with these sections:
+Write `$MIGRATION_DIR/snowsql-migration-report.md` with these sections:
 
 ```markdown
 # SnowSQL migration report
@@ -59,7 +59,7 @@ Write `snowsql-migration-report.md` with these sections:
 
 ## Migrated files
 
-<paths under snowsql-migrated/, or none>
+<paths under $MIGRATION_DIR/snowsql-migrated/, or none>
 
 ## Unresolved blockers
 
@@ -78,6 +78,6 @@ Restore the CLI config backup from <path>.
 Remove the snowsql shell alias if one was added.
 ```
 
-Include `STATUS: COPIES_WRITTEN` only after copies were written. Include `STATUS: STOPPED_BEFORE_MUTATION` in `migration-plan.md` when you are still waiting for approval.
+Include `STATUS: COPIES_WRITTEN` only after copies were written. Include `STATUS: STOPPED_BEFORE_MUTATION` in `$MIGRATION_DIR/migration-plan.md` when you are still waiting for approval.
 
 Blocked items stay in "Unresolved blockers" even if the user accepts every compatible copy.

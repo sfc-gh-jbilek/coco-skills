@@ -15,16 +15,18 @@ e45e3a75467b8ba38b44787e32bf3e1a1edcd7033a9bd544d622b733c10560f5  continue.sql
 40588adc639499c4a652d12a387c0b03d2d4500a4e8208d6687c2da4eb8ce834  extract.sql
 EOF
 
-test -f snowsql-inventory.json || fail "missing inventory"
-test -f snowsql-migration-report.md || fail "missing report"
-grep -q 'DISPOSITION: blocked' snowsql-migration-report.md || fail "missing blocked token"
-grep -q 'COPY INTO @stage' snowsql-migration-report.md || fail "missing COPY INTO"
-grep -q 'snow stage copy' snowsql-migration-report.md || fail "missing stage copy"
+test ! -e snowsql-inventory.json || fail "inventory written beside the scripts"
+test ! -e snowsql-migration-report.md || fail "report written beside the scripts"
+test -f snowsql-migration/snowsql-inventory.json || fail "missing inventory"
+test -f snowsql-migration/snowsql-migration-report.md || fail "missing report"
+grep -q 'DISPOSITION: blocked' snowsql-migration/snowsql-migration-report.md || fail "missing blocked token"
+grep -q 'COPY INTO @stage' snowsql-migration/snowsql-migration-report.md || fail "missing COPY INTO"
+grep -q 'snow stage copy' snowsql-migration/snowsql-migration-report.md || fail "missing stage copy"
 
 python3 - <<'PY' || fail "inventory dispositions"
 import json
 from pathlib import Path
-data = json.loads(Path("snowsql-inventory.json").read_text())
+data = json.loads(Path("snowsql-migration/snowsql-inventory.json").read_text())
 names = {
     (item.get("name"), item.get("disposition"))
     for item in data["findings"]
@@ -37,9 +39,12 @@ if ("!set", "blocked") not in names:
     raise SystemExit("set")
 PY
 
+if [ -f snowsql-migration/snowsql-migrated/export.sh ]; then
+  grep -q 'COPY INTO @stage' snowsql-migration/snowsql-migrated/export.sh || fail "export copy dropped COPY INTO"
+  grep -q 'snow stage copy' snowsql-migration/snowsql-migrated/export.sh || fail "export copy dropped stage copy"
+fi
 if [ -f snowsql-migrated/export.sh ]; then
-  grep -q 'COPY INTO @stage' snowsql-migrated/export.sh || fail "export copy dropped COPY INTO"
-  grep -q 'snow stage copy' snowsql-migrated/export.sh || fail "export copy dropped stage copy"
+  fail "export copy written beside the scripts"
 fi
 
 echo "PASS"

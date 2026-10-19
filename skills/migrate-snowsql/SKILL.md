@@ -27,6 +27,19 @@ Load `references/configuration.md`, `references/compatibility.md`, and `referenc
 
 Out of scope: continuous SnowSQL sync, runtime SnowSQL compatibility, config-v2, and unattended migration.
 
+## Work repo
+
+The inventory, the plan, the script copies, and the report live in the work repo. Do not write them into the SnowSQL project.
+
+The work repo is `$PRODUCT_WORK_ROOT` when that variable is a directory. Otherwise the current git repository is the work repo.
+
+The migration directory inside the work repo:
+
+- `$PRODUCT_WORK_ROOT` is set: `work/snowcli/migrate-snowsql/runs/<slug>/`
+- otherwise: `snowsql-migration/` at the work repo root
+
+`<slug>` is the SnowSQL project's directory name. Create that directory before writing. Call it `$MIGRATION_DIR` below. Scan the SnowSQL project by path. Redirect scanner stdout into `$MIGRATION_DIR`.
+
 ## Workflow
 
 ### 1. Preflight
@@ -42,13 +55,13 @@ If either check fails, say the corrected importer is not in this install and sto
 
 ### 2. Inventory
 
-Run `snow helpers check-snowsql-env-vars` first. It is read-only. Then run the scanner on the project and save stdout as `snowsql-inventory.json`:
+Run `snow helpers check-snowsql-env-vars` first. It is read-only. Then run the scanner on the SnowSQL project and save stdout as `$MIGRATION_DIR/snowsql-inventory.json`:
 
 ```bash
-uv run --project "$SKILL_DIRECTORY" python "$SKILL_DIRECTORY/scripts/scan_snowsql.py" . > snowsql-inventory.json
+uv run --project "$SKILL_DIRECTORY" python "$SKILL_DIRECTORY/scripts/scan_snowsql.py" "$SNOWSQL_PROJECT" > "$MIGRATION_DIR/snowsql-inventory.json"
 ```
 
-Write `migration-plan.md` with the line `STATUS: STOPPED_BEFORE_MUTATION`, the four disposition counts, and the blocked reasons from the JSON. Redact secrets. Names and `<redacted>` only.
+Write `$MIGRATION_DIR/migration-plan.md` with the line `STATUS: STOPPED_BEFORE_MUTATION`, the four disposition counts, and the blocked reasons from the JSON. Redact secrets. Names and `<redacted>` only.
 
 ⚠️ STOP. Do not import, edit, or run SQL until the user approves the plan.
 
@@ -60,7 +73,7 @@ Only after a separate yes, and only if step 1 passed. Back up the Snowflake CLI 
 
 ### 4. Script copies
 
-Only after a separate yes. Write copies under `snowsql-migrated/`, preserving relative paths. Never edit the original. Skip any file that has a `blocked` finding. Translate only documented equivalents from `references/compatibility.md`. Rewrite a defined `&name` to `<% name %>`. Change `snowsql` to `snow sql`. Show `diff -u` before treating a copy as accepted. If the user rejects a copy, delete it.
+Only after a separate yes. Write copies under `$MIGRATION_DIR/snowsql-migrated/`, preserving relative paths. Never edit the original. Skip any file that has a `blocked` finding. Translate only documented equivalents from `references/compatibility.md`. Rewrite a defined `&name` to `<% name %>`. Change `snowsql` to `snow sql`. Show `diff -u` before treating a copy as accepted. If the user rejects a copy, delete it.
 
 Large extracts stay `COPY INTO @stage` followed by `snow stage copy`. A faster TABLE render does not fix CSV truncation.
 
@@ -68,7 +81,7 @@ Large extracts stay `COPY INTO @stage` followed by `snow stage copy`. A faster T
 
 Static checks need no connection. A passing fixture does not certify untested scripts. Live SQL needs another yes and a named non-production connection. Follow `references/validation.md`.
 
-Write `snowsql-migration-report.md` with: migrated files, unresolved blockers (`DISPOSITION: blocked`), validation evidence, rollback, and the exact `snow --version` text. After copies exist, include `STATUS: COPIES_WRITTEN`.
+Write `$MIGRATION_DIR/snowsql-migration-report.md` with: migrated files, unresolved blockers (`DISPOSITION: blocked`), validation evidence, rollback, and the exact `snow --version` text. After copies exist, include `STATUS: COPIES_WRITTEN`.
 
 ## Stopping points
 
@@ -84,3 +97,4 @@ Write `snowsql-migration-report.md` with: migrated files, unresolved blockers (`
 - Rewriting a CSV extract to `snow sql --format CSV` and calling the bytes equivalent.
 - Printing passwords, keys, tokens, or connection values.
 - Editing the original script or the SnowSQL config.
+- Writing the inventory, plan, copies, or report into the SnowSQL project.

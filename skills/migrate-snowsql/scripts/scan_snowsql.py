@@ -35,6 +35,7 @@ SKIP_DIRS = {
     "__pycache__",
     "node_modules",
     "snowsql-migrated",
+    "snowsql-migration",
     ".snowflake",
 }
 SKIP_FILES = {

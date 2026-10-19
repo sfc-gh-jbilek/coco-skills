@@ -1,1 +1,1 @@
-Use the migrate-snowsql skill. Classify the continue-on-error script and the large CSV export, then write snowsql-migration-report.md. Do not import connections, do not change the original scripts, and do not run SQL.
+Use the migrate-snowsql skill. Classify the continue-on-error script and the large CSV export, then write the report. Do not import connections, do not change the original scripts, and do not run SQL. This directory is the work repo. Write the working files under snowsql-migration/.
